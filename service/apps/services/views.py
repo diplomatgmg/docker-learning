@@ -1,4 +1,4 @@
-from django.db.models import Prefetch, F, Sum
+from django.db.models import Prefetch, Sum
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.clients.models import Client
@@ -17,9 +17,6 @@ class SubscriptionView(ReadOnlyModelViewSet):
                 "company_name", "user__email"
             ),
         ),
-    ).annotate(
-        price=F("service__full_price")
-        - (F("service__full_price") * F("plan__discount_percent") / 100.0)
     )
 
     def list(self, request, *args, **kwargs):
