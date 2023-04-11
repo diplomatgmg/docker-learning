@@ -18,10 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from apps.services.views import SubscriptionView
+from apps.services.views import SubscriptionView, PlanView
 
 router = routers.DefaultRouter()
 router.register(r'api/subscriptions', SubscriptionView)
+router.register(r'api/plans', PlanView)
 
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
