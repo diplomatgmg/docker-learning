@@ -29,11 +29,21 @@ services:
   celery:
     build:
       context: .
-    hostname: celery
-    command: celery -A service.celery.app celery -l info
+    command: celery -A service.celery.app worker -l info
     volumes:
       - ./service:/service
-    links:
-      - redis
     depends_on:
       - redis
+
+  flower:
+    build:
+      context: .
+    command: celery -A service.celery.app flower
+    volumes:
+      - ./service:/service
+    depends_on:
+      - celery
+    ports:
+      - "5555:5555"
+
+
