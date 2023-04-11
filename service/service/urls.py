@@ -24,6 +24,7 @@ router = routers.DefaultRouter()
 router.register(r'api/subscriptions', SubscriptionView)
 
 urlpatterns = [
+    path('__debug__/', include('debug_toolbar.urls')),
     path('admin/', admin.site.urls),
     path('', include(router.urls))
 ]
