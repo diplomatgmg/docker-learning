@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 
 from apps.clients.models import Client
-from apps.services.tasks import set_price
+from apps.services.tasks import set_price, set_comment
 
 
 class Service(models.Model):
@@ -17,6 +17,7 @@ class Service(models.Model):
         if self.full_price != self.__full_price:
             for subscription in self.subscriptions.all():
                 set_price.delay(subscription.id)
+                set_comment.delay(subscription.id)
 
         return super().save(*args, **kwargs)
 
@@ -29,6 +30,9 @@ class Plan(models.Model):
         default=0, validators=[MaxValueValidator(100)]
     )
 
+    def __str__(self):
+        return f'{self.plan_type} - {self.discount_percent}'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__discount_percent = self.discount_percent
@@ -37,6 +41,7 @@ class Plan(models.Model):
         if self.discount_percent != self.__discount_percent:
             for subscription in self.subscriptions.all():
                 set_price.delay(subscription.id)
+                set_comment.delay(subscription.id)
 
         return super().save(*args, **kwargs)
 
@@ -52,3 +57,4 @@ class Subscription(models.Model):
         Plan, related_name="subscriptions", on_delete=models.PROTECT
     )
     price = models.PositiveIntegerField(default=0)
+    comment = models.CharField(max_length=255, default='', blank=True)
